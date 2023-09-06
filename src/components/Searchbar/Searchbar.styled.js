@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Form, Field } from 'formik';
 
-export const Searchbar = styled.header`
+export const SearchbarField = styled.header`
   top: 0;
   left: 0;
   position: sticky;

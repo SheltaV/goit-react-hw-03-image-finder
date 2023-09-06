@@ -2,36 +2,35 @@ import { Component } from "react";
 import { GlobalStyle } from "./GlobalStyle";
 
 import { fetchImages } from "./api";
-import { Seachbar } from "./Searchbar/Searchbar";
+import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { LoadButton } from "./Button/Button";
 
 export class App extends Component {
-state = {
-  query: '',
-  images: [],
-  page: 1,
-}
+  state = {
+    query: '',
+    images: [],
+    page: 1,
+  }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query || prevState.page !== this.state.page)
-    {
-    try {
-      const fetched = await fetchImages(this.state.query, this.state.page);
-      this.setState({images: fetched})
+    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
+      try {
+        const fetched = await fetchImages(this.state.query, this.state.page);
+        this.setState({ images: fetched })
       }
-    catch (err) {
-      console.log(err)
+      catch (err) {
+        console.log(err)
       }
     }
-}
-
-  changeSearch = value => {
-       this.setState({
-        query: value
-       })
   }
+
+  // changeSearch = value => {
+  //      this.setState({
+  //       query: value
+  //      })
+  // }
 
   submitSearch = query => {
     this.setState({ query, images: [], page: 1 })
@@ -48,10 +47,11 @@ state = {
   render() {
     return (
       <div>
-        <Seachbar value={this.state.query} onChange={this.changeSearch} onSubmit={this.submitSearch} />
+        <Searchbar onSubmit={this.submitSearch} />
         <ImageGallery><ImageGalleryItem images={this.state.images} /></ImageGallery>
         {this.state.images.length >= 12 && <LoadButton onLoad={this.loadMore} />}
-      <GlobalStyle/>
+        <GlobalStyle />
       </div>
-    )};
+    )
+  };
 };
