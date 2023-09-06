@@ -86,7 +86,7 @@ export class App extends Component {
         <ImageGallery><ImageGalleryItem images={images} onChoose={this.chooseSelected} onOpen={this.toggleModal} /></ImageGallery>
         {images.length >= 12 && <LoadButton onLoad={this.loadMore} />}
         {loading && <Loader />}
-        {modal && <Modal image={selectedImage} backdropClick={this.handleBackdropClick} />}
+        {modal && <Modal imageValue={selectedImage} backdropClick={this.handleBackdropClick} />}
         <GlobalStyle />
         <Toaster position="top-right" />
       </div>

@@ -1,9 +1,9 @@
 import { Overlay, ModalWindow } from './Modal.styled';
 
-export const Modal = ({image, backdropClick}) => {
+export const Modal = ({imageValue, backdropClick}) => {
     return (<Overlay onClick={() => backdropClick()}>
         <ModalWindow>
-            <img src={image} alt="image" />
+            <img src={imageValue} alt="img" />
   </ModalWindow>
 </Overlay>)
 }
