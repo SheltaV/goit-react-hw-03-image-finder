@@ -15,5 +15,5 @@ export const fetchImages = async (search, page = 1) => {
     })
     
     const resp = await axios.get(`/?${params}`)
-    return resp.data.hits;
+    return resp.data;
 }

@@ -2,10 +2,9 @@ import { Component } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { GlobalStyle } from "./GlobalStyle";
 
-import { fetchImages } from "./api";
+import { fetchImages } from "../services/api";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
-import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { LoadButton } from "./Button/Button";
 import { Loader } from "./Loader/Loader";
 import { Modal } from "./Modal/Modal";
@@ -17,11 +16,8 @@ export class App extends Component {
     selectedImage: '',
     page: 1,
     loading: false,
-    modal: false
-  }
-
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeydown)
+    modal: false,
+    showButton: true
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -29,11 +25,16 @@ export class App extends Component {
     if (prevState.query !== query || prevState.page !== page) {
       try {
         this.setState({ loading: true });
-        const fetched = await fetchImages(query, page);
-        if (fetched.length === 0) {
+        const { hits, totalHits } = await fetchImages(query, page);
+        if (totalHits === 0) {
+          this.setState({showButton: false})
           return toast.error('Cannot find any image!');
         }
-        this.setState({ images: [...images, ...fetched] })
+        if (page === Math.ceil(totalHits / 12)) {
+          this.setState({showButton: false})
+          toast.success('You reached the end of searched list');
+        }
+        this.setState({ images: [...images, ...hits] })
       }
       catch (err) {
         console.log(err)
@@ -43,16 +44,6 @@ export class App extends Component {
         this.setState({ loading: false });
       }
     }
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeydown)
-  }
-
-  handleKeydown = e => {
-  if (e.code === 'Escape') {
-        this.setState({modal: false})
-      }
   }
 
   handleBackdropClick = () => {
@@ -73,18 +64,18 @@ export class App extends Component {
     this.setState(({ modal }) => ({ modal: !modal }))
   }
 
-  chooseSelected = (evt) => {
+  chooseSelected = evt => {
     this.setState({ selectedImage: evt })
   }
 
 
   render() {
-    const {images, loading, modal, selectedImage} = this.state
+    const {images, loading, modal, selectedImage, showButton} = this.state
     return (
       <div>
         <Searchbar onSubmit={this.submitSearch} />
-        <ImageGallery><ImageGalleryItem images={images} onChoose={this.chooseSelected} onOpen={this.toggleModal} /></ImageGallery>
-        {images.length >= 12 && <LoadButton onLoad={this.loadMore} />}
+        <ImageGallery images={images} onChoose={this.chooseSelected} onOpen={this.toggleModal}/>
+        {images.length > 0 && showButton && !loading && <LoadButton onLoad={this.loadMore} />}
         {loading && <Loader />}
         {modal && <Modal imageValue={selectedImage} backdropClick={this.handleBackdropClick} />}
         <GlobalStyle />
